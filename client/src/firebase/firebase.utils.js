@@ -2,6 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 
+
 const config =  {
     apiKey: "AIzaSyDM9o5GTokE9FbTqQ9aLSj0WuQ5aTVYPb0",
     authDomain: "nz-db-9c284.firebaseapp.com",
@@ -12,7 +13,6 @@ const config =  {
     appId: "1:648810017281:web:3f7fa420629a8b0c104600",
     measurementId: "G-78F8EF886H"
   };
-
 
   firebase.initializeApp(config);
 
@@ -40,44 +40,48 @@ const config =  {
   
     return userRef;
   };
-
-  export const convertCollectionsSapshotToMap = collections => {
-      const transformCollection = collections.docs.map(  doc => {
-        const { title, items} = doc.data();
-            return {
-                routeName: encodeURI( title.toLowerCase()),
-                id: doc.id,
-                title,
-                items
-            }
-        }   
-      );
-      return transformCollection.reduce( (accumulator, collection) => {
-        accumulator[collection.title.toLowerCase()] = collection;
-        return accumulator;
-      }
-      , {})
+  
+  export const addCollectionAndDocuments = async (
+    collectionKey,
+    objectsToAdd
+  ) => {
+    const collectionRef = firestore.collection(collectionKey);
+  
+    const batch = firestore.batch();
+    objectsToAdd.forEach(obj => {
+      const newDocRef = collectionRef.doc();
+      batch.set(newDocRef, obj);
+    });
+  
+    return await batch.commit();
   };
-
-  export const addCollectionAndDocuments = async ( collectionKey, objectsToAdd) => {
-      const collectionRef = firestore.collection(collectionKey);
-      const batch = firestore.batch()
-      objectsToAdd.forEach( obj => {
-          const newDocRef = collectionRef.doc();
-          batch.set(newDocRef, obj);
-      });
-
-      return await batch.commit();
+  
+  export const convertCollectionsSnapshotToMap = collections => {
+    const transformedCollection = collections.docs.map(doc => {
+      const { title, items } = doc.data();
+  
+      return {
+        routeName: encodeURI(title.toLowerCase()),
+        id: doc.id,
+        title,
+        items
+      };
+    });
+  
+    return transformedCollection.reduce((accumulator, collection) => {
+      accumulator[collection.title.toLowerCase()] = collection;
+      return accumulator;
+    }, {});
   };
-
+  
   export const getCurrentUser = () => {
-    return new Promise((resolve, reject)  => {
-      const unsubscribe = auth.onAuthStateChanged( (userAuth) => {
+    return new Promise((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(userAuth => {
         unsubscribe();
         resolve(userAuth);
-      }, reject)
-    })
-  }
+      }, reject);
+    });
+  };
   
   export const auth = firebase.auth();
   export const firestore = firebase.firestore();
