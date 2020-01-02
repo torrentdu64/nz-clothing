@@ -1,4 +1,4 @@
-import React from 'react';
+import React , { Profiler } from 'react';
 
 // import './homepage.styles.scss';
 
@@ -10,7 +10,11 @@ import { HomePageContainer } from './homepage.styles';
 const HomePage = () => (
   <HomePageContainer className='homepage'>
     <h1>Welcome to my Homepage</h1>
-    <Directory />
+    <Profiler id="directory" onRender={(id, phase , actualDuration) => {
+      console.log({id, phase , actualDuration})
+    } }>
+      <Directory />
+    </Profiler>
   </HomePageContainer>
 );
 
