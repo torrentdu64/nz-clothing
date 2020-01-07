@@ -11,10 +11,8 @@ import {
   CollectionItemsContainer
 } from './collection.styles';
 
-const CollectionPage = ({ collection }) => {
-  console.log(collection);
+export const CollectionPage = ({ collection }) => {
   const { title, items } = collection;
-  console.log(items);
   return (
     <CollectionPageContainer>
       <CollectionTitle>{title}</CollectionTitle>
